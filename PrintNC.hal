@@ -44,7 +44,7 @@ net home-y2     <=  hm2_7i96.0.gpio.002.in_not
 net home-z     <=  hm2_7i96.0.gpio.003.in_not
 
 # --- PROBE-IN ---
-net probe-in     <=  hm2_7i96.0.gpio.004.in
+net probe-in     <=  hm2_7i96.0.gpio.005.in
 
 
 #*******************

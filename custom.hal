@@ -13,8 +13,8 @@ loadrt and2 count=2
 addf and2.0 servo-thread
 addf and2.1 servo-thread
 
-#setp mult2.0.in0 .16666666666
-setp mult2.0.in0 3
+setp mult2.0.in0 .16666666666
+#setp mult2.0.in0 1
 #setp mult2.0.in0 13.33333333
 net spindle-set-speed spindle.0.speed-out => mult2.0.in1
 net Setpoint YL620.W_SetFreq.00 <= mult2.0.out

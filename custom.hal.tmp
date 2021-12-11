@@ -1,0 +1,35 @@
+# Note: For this to work, you need to:
+# 1) run this: sudo usermod -a -G dialout $USER
+# 2) log out (or reboot)
+# 3) confirm $USER is in this output: grep dialout /etc/group
+
+loadusr -Wn YL620 mb2hal config=YL620.ini
+
+loadrt mult2
+addf mult2.0 servo-thread
+loadrt mux4
+addf mux4.0 servo-thread
+loadrt and2 count=2
+addf and2.0 servo-thread
+addf and2.1 servo-thread
+
+setp mult2.0.in0 .16666666666
+#setp mult2.0.in0 3
+#setp mult2.0.in0 13.33333333
+#net spindle-set-speed spindle.0.speed-out => mult2.0.in1
+net Setpoint YL620.W_SetFreq.00 <= mult2.0.out
+
+net S-on and2.0.in0 <= spindle.0.on
+net S-fwd and2.0.in1 <= spindle.0.forward
+#net S-on and2.1.in0 
+net S-rev and2.1.in1 <= spindle.0.reverse
+net S-on-fwd mux4.0.sel0
+#net S-on-fwd mux4.0.sel0 <= and2.0.out
+#net S-on-rev mux4.0.sel1 <= and2.1.out
+sets S-on-fwd true
+setp mux4.0.in0 1 #stop
+setp mux4.0.in1 18 #forward
+setp mux4.0.in2 34 #reverse
+setp mux4.0.in3 128 #reset
+
+net control YL620.W_Control.00 <= mux4.0.out

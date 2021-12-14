@@ -3,5 +3,23 @@
 
 #net spindle-speed-fb <= gmoccapy.spindle_feedback_bar
 #net spindle-at-speed <= gmoccapy.spindle_at_speed_led
+#loadusr -W hal_manualtoolchang
+
+
+#net tool-change gmoccapy.toolchange-change <= iocontrol.0.tool-change
+#net tool-changed gmoccapy.toolchange-changed <= iocontrol.0.tool-changed
+#net tool-number gmoccapy.toolchange-number <= iocontrol.0.tool-prep-number
+#net tool-prepare-loopback iocontrol.0.tool-prepare <= iocontrol.0.tool-prepared
+
+
+#loadrt or2 count=1
+#
+#addf or2.0   servo-thread
+#
+#net probe-in <= hm2_7i96.0.gpio.005.in
+#net length-in <= hm2_7i96.0.gpio.004.in_not
+#net probe-in => or2.0.in0
+#net length-in => or2.0.in1
+#net probe-or-length <= or2.0.out => motion.probe-input
 
 

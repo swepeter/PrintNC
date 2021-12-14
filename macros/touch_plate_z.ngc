@@ -1,0 +1,37 @@
+o<touch_plate_z> sub
+
+#<PlateThickness> =      42.7   ( Thickness of your touh plate when proving in the Z orientation, this is used to re-caluclate your new zero after touching off )
+#<FastProbe> =            300     ( This is the probe speed used for your initial search, this should be a slow value to avoid damaging your tool, but doesn not need to "crawl"  )
+#<SlowProbe> =             100     ( This is the probe speed for the final search, this should be a very slow value to improve the accuracy of the probing )
+#<ZProbeRange> =          -10.0   ( This is the distance the probe will travel on its initial search before erroring out, should be a negative value )
+#<ProbeLift> =             2.0  ( This is the distnce the probe will lift off the touch plate prior to starting the second search )
+#<ProbeRetract> =         2.00   ( This is the distance the probe will lift from the touch plate after succesful probing to allow for removal of the plate )
+
+( Set current Z position to 0 so that we will always be moving down )
+G10 L20 P0 Z0
+
+( Probe quickly for initial contact )
+G91
+F[#<FastProbe>]
+G38.2 Z[#<ZProbeRange>]
+
+( Move off plate for slow search )
+F[#<SlowProbe>]
+G1 Z[#<Probelift>]
+
+( Pause for 0.5 Sec )
+G4 P0.5
+
+( Slow probe search )
+g38.2 Z[-2 * #<ProbeLift>]
+
+( Move up to set new zero )
+G1 Z[#<ProbeRetract>] F[#<FastProbe>]
+
+( Set Z0 at point where probe triggers with offset of plate thickness)
+G10 L20 P0 Z[#<ProbeRetract> + #<PlateThickness>]
+G90
+
+o<touch_plate_z> endsub
+
+M2

@@ -76,8 +76,8 @@ O<tool-change> SUB
 #<_ProbeFastFeed> =   2000.0     ( feed rate for moving to _ProbeFastZ )
 #<_ProbeFeed1> =       100.0     ( feed rate for touching switch/touch-off plate first time )
 #<_ProbeFeed2> =        100.0     ( feed rate for touching switch/touch-off plate second time )
-#<_ToolChangeX> =       26.0     ( machine X coordinate to pause at for manual tool changing )
-#<_ToolChangeY> =       162.0     ( machine Y coordinate to pause at for manual tool changing )
+#<_ToolChangeX> =       500.0     ( machine X coordinate to pause at for manual tool changing )
+#<_ToolChangeY> =       100.0     ( machine Y coordinate to pause at for manual tool changing )
 #<_MistOnDuringProbe> =   0     ( set to 1 for mist, or 2 for coolant, or 0 for nothing during probing, to clear switch of swarf )
 (-------------------------------------------------------------------------------------------------------)
 
@@ -94,9 +94,12 @@ O105 IF [ #<_ToolDidFirst> EQ 0 ]
         #<ToolZLast> = 0
 
 O105 ENDIF
+G90                                            ( use absolute positioning here )
+G53 G0 Z-10
+G30.1                                          ( save current position in #5181-#5183... )
 
 G53 G1 F[#<_TravelFeed>] Z[#<_TravelZ>]
-G53 G1 F[#<_TravelFeed>] X[#<_ToolChangeX>] Y[#<_ToolChangeY>]  ( Moves to desired potion for manual tool change )
+G53 G0 F[#<_TravelFeed>] X[#<_ToolChangeX>] Y[#<_ToolChangeY>]  ( Moves to desired potion for manual tool change )
 
 M6                                             ( do the normal M6 stuff )
 M70                                            ( save current modal state )
@@ -104,9 +107,8 @@ M70                                            ( save current modal state )
 M9                                             ( turn off coolant, will be restored on return if it was on )
 M5                                             ( turn off spindle, cannot be on during the probe )
 G[21 - #<_UseInches>]                          ( use inches or millimeters as required here, units will be restored on return )
-G30.1                                          ( save current position in #5181-#5183... )
 G49                                            ( clear tool length compensation )
-G90                                            ( use absolute positioning here )
+
 G94                                            ( use feedrate in units/min )
 G40                                            ( turn cutter radius compensation off here )
 
@@ -126,8 +128,9 @@ O200 IF [ #<_ToolDidFirst> EQ 0 ]
   #<_ToolZRef> = #5063                         ( save trip point )
   #<_ToolZLast> = #<_ToolZRef>                 ( save last tool Z position )
   G53 G1 F[#<_TravelFeed>] Z[#<_TravelZ>]      ( return to safe level )
-  G53 G0 X[#5181] Y[#5182]                     ( return to where we were in X Y)
-  G53 G1 F[#<_TravelFeed>] Z[#5183]            ( return to where we were in Z )
+  (G30 Z35                                       lift to G54 Z25 then return to where we were in X Y)
+  G53 G0 X[#5181] Y[#5182]                      (return to where we were in X Y)
+  (G53 G1 F[#<_TravelFeed>] Z[#5183]             return to where we were in Z )
   M72                                          ( restore modal state )
   #<_ToolDidFirst> = 1                         ( we have been in this section to set reference value already )
 O200 ELSE
@@ -145,7 +148,7 @@ O200 ELSE
     #<ToolDiamMM> = [ #<ToolDiamIn> * 25.4 ]
   O102 ENDIF
   (M0)                                           ( pause execution )
- 
+  G90
   G53 G0 X[#<_ProbeX>] Y[#<_ProbeY>]           ( to high place directly over switch )
   G53 G1 F[#<_ProbeFastFeed>] Z[#<_ProbeFastZ>]( move tool closer to switch -- we shouldn't hit it )
   G54 G1 F[#<_ProbeFeed1>] G91                 ( use relative positioning )
@@ -160,7 +163,8 @@ O200 ELSE
   #<_ToolZ> = #5063                            ( save new tool length )
   G43.1 Z[#<_ToolZ> - #<_ToolZRef>]            ( set new tool length Z offset, we do this now to show operator even though it has to be set again after M72 )
   G53 G1 F[#<_TravelFeed>] Z[#<_TravelZ>]      ( return to high travel level )
-  G53 G0 X[#5181] Y[#5182]                     ( return to where we were in X Y)
+  (G30 Z35                                       lift to G54 Z25 then return to where we were in X Y)
+  G53 G0 X[#5181] Y[#5182]                      (return to where we were in X Y)
   #<_ToolZLast> = #<_ToolZ>                    ( save last tool length )
   
   M72                                          ( restore modal state )

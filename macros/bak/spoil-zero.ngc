@@ -9,7 +9,7 @@
 #<_TravelFeed> =      200.0     ( feedrate used for general Z moves when avoiding G0 )
 #<_ProbeX> =           15.0     ( machine X coordinate of switch/touch-off plate )
 #<_ProbeY> =           162.0     ( machine Y coordinate of switch/touch-off plate )
-#<_ProbeFastZ> =       -50.0     ( machine Z coord to move to before starting probe, longest tool should not touch switch at this Z )
+#<_ProbeFastZ> =       -30.0     ( machine Z coord to move to before starting probe, longest tool should not touch switch at this Z )
 #<_ProbeMinZ> =        -100.0     ( machine Z coord to stop probe, shortest tool must touch switch at this Z, must be > min Z )
 #<_ProbeRetract> =      5.0     ( small distance to retract before approaching switch/touch-off plate second time )
 #<_ProbeFastFeed> =   300.0     ( feed rate for moving to _ProbeFastZ )
@@ -18,7 +18,7 @@
 #<_ToolChangeX> =       326.0     ( machine X coordinate to pause at for manual tool changing )
 #<_ToolChangeY> =       100.0     ( machine Y coordinate to pause at for manual tool changing )
 #<_MistOnDuringProbe> =   0     ( set to 1 for mist, or 2 for coolant, or 0 for nothing during probing, to clear switch of swarf )
-#<_SpoilABSDiff> =       28
+#<_SpoilABSDiff> =       25
 (-------------------------------------------------------------------------------------------------------)
 
 M70
@@ -44,11 +44,11 @@ G40                                            ( turn cutter radius compensation
   M9                                           ( turn off mist )
   G54
   G90
-  G53 G1 X15 Y162 F500
+  G53 G1 X154 Y162 F500
   G91
-  G1 Z[1] F100
+  G1 Z[25-#<_SpoilABSDiff>] F100
   G90
-  G10 L20 P1 Z[1+ #<_SpoilABSDiff>]
+  G10 L20 P1 Z[1]
   G10 L20 P2 Z[1]
   g10 L20 P3 Z[1]
   G10 L20 P4 Z[1]

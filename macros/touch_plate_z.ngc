@@ -13,7 +13,9 @@ G10 L20 P0 Z0
 ( Probe quickly for initial contact )
 G91
 F[#<FastProbe>]
+M64 P00
 G38.2 Z[#<ZProbeRange>]
+M65 P00
 
 ( Move off plate for slow search )
 F[#<SlowProbe>]
@@ -23,7 +25,9 @@ G1 Z[#<Probelift>]
 G4 P0.5
 
 ( Slow probe search )
+M64 P00
 g38.2 Z[-2 * #<ProbeLift>]
+M65 P00
 
 ( Move up to set new zero )
 G1 Z[#<ProbeRetract>] F[#<FastProbe>]

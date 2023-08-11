@@ -9,7 +9,7 @@ loadrt mult2
 addf mult2.0 servo-thread
 loadrt mux4
 addf mux4.0 servo-thread
-loadrt and2 count=2
+#loadrt and2 count=2
 addf and2.0 servo-thread
 addf and2.1 servo-thread
 

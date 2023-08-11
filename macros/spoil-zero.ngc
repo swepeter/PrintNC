@@ -18,7 +18,8 @@
 #<_ToolChangeX> =       326.0     ( machine X coordinate to pause at for manual tool changing )
 #<_ToolChangeY> =       100.0     ( machine Y coordinate to pause at for manual tool changing )
 #<_MistOnDuringProbe> =   0     ( set to 1 for mist, or 2 for coolant, or 0 for nothing during probing, to clear switch of swarf )
-#<_SpoilABSDiff> =       28
+#<_SpoilABSDiff> =       30
+
 (-------------------------------------------------------------------------------------------------------)
 
 M70
@@ -38,9 +39,13 @@ G40                                            ( turn cutter radius compensation
   O101 IF [ #<_MistOnDuringProbe> EQ 1 OR #<_MistOnDuringProbe> EQ 2 ]
     M[7 + #<_MistOnDuringProbe> - 1]           ( turn on mist/coolant )
   O101 ENDIF
+  M64 P00
   G38.2 Z[#<_ProbeMinZ> - #<_ProbeFastZ>] F[#<_ProbeFeed1>]    ( trip switch slowly )
+  M65 P00
   G0 Z[#<_ProbeRetract>]                       ( go up slightly )
+  M64 P00
   G38.2 Z[#<_ProbeRetract>*-2] F[#<_ProbeFeed2>]   ( trip switch very slowly )
+  M65 P00
   M9                                           ( turn off mist )
   G54
   G90

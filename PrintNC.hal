@@ -10,9 +10,16 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JO
 loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=1 num_pwmgens=0 num_stepgens=5 sserial_port_0=00xxxx" 
 setp    hm2_7i96.0.watchdog.timeout_ns 5000000
-loadrt pid names=pid.x,pid.y,pid.y2,pid.z,pid.s
+loadrt pid names=pid.x,pid.y,pid.y2,pid.z,pid.s,M3Trigger.trigger_pin
 loadrt abs names=abs.spindle
 loadrt lowpass names=lowpass.spindle
+loadrt and2 count=14
+#loadusr -Wn /home/pi/linuxcnc/configs/PrintNC/hal_m5_command.py
+
+#loadrt hal_component my_mqtt_publisher halpython
+#loadrt pid anmes= my_mqtt_publisher.trigger_pin bit OUT
+#addf M3Trigger.update_function servo-thread
+
 
 addf hm2_7i96.0.read          servo-thread
 addf motion-command-handler   servo-thread
@@ -25,11 +32,19 @@ addf pid.s.do-pid-calcs       servo-thread
 addf abs.spindle              servo-thread
 addf lowpass.spindle          servo-thread
 addf hm2_7i96.0.write         servo-thread
+addf and2.13 		      servo-thread
 
 # external output signals
 
 
 # external input signals
+
+
+# Digital input signals
+
+#net M64-and-in  motion.digital-out-00 and2.13.in0
+net digital-signal motion.digital-out-00 and2.13.in0
+
 
 # --- HOME-X ---
 net home-x     <=  hm2_7i96.0.gpio.000.in_not
@@ -47,15 +62,25 @@ net home-z     <=  hm2_7i96.0.gpio.003.in_not
 #net probe-in     <=  hm2_7i96.0.gpio.006.in
 
 
-loadrt or2 count=1
+loadrt or2 count=2
 
 addf or2.0   servo-thread
 
-net probe-in <= hm2_7i96.0.gpio.006.in
-net length-in <= hm2_7i96.0.gpio.004.in_not
-net probe-in => or2.0.in0
-net length-in => or2.0.in1
-net probe-or-length <= or2.0.out => motion.probe-input
+#net probe-in <= hm2_7i96.0.gpio.006.in
+#net length-in <= hm2_7i96.0.gpio.004.in_not
+#net probe-in => or2.0.in0
+#net length-in => or2.0.in1
+#net probe-or-length <= or2.0.out => motion.probe-input
+
+
+net length-in               hm2_7i96.0.gpio.004.in_not   and2.13.in1
+net tool-sensor             and2.13.out                  or2.0.in0
+net probe-in                hm2_7i96.0.gpio.006.in       or2.0.in1
+net probe-or-tool-sensor    or2.0.out
+net probe-or-tool-sensor    motion.probe-input
+
+
+
 
 #*******************
 #  AXIS X JOINT 0
@@ -306,6 +331,7 @@ net spindle-revs               =>  spindle.0.revs
 net spindle-at-speed           =>  spindle.0.at-speed
 net spindle-vel-fb-rps         =>  spindle.0.speed-in
 net spindle-index-enable      <=>  spindle.0.index-enable
+#net spindle-at-speed => motion.spindle-at-speed
 
 # ---Setup spindle at speed signals---
 

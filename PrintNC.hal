@@ -10,7 +10,7 @@ loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JO
 loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=1 num_pwmgens=0 num_stepgens=5 sserial_port_0=00xxxx" 
 setp    hm2_7i96.0.watchdog.timeout_ns 5000000
-loadrt pid names=pid.x,pid.y,pid.y2,pid.z,pid.s,M3Trigger.trigger_pin
+loadrt pid names=pid.x,pid.y,pid.y2,pid.z,pid.s,pid.a,M3Trigger.trigger_pin
 loadrt abs names=abs.spindle
 loadrt lowpass names=lowpass.spindle
 loadrt and2 count=14
@@ -28,6 +28,7 @@ addf pid.x.do-pid-calcs       servo-thread
 addf pid.y.do-pid-calcs       servo-thread
 addf pid.y2.do-pid-calcs       servo-thread
 addf pid.z.do-pid-calcs       servo-thread
+addf pid.a.do-pid-calcs       servo-thread
 addf pid.s.do-pid-calcs       servo-thread
 addf abs.spindle              servo-thread
 addf lowpass.spindle          servo-thread
@@ -79,7 +80,8 @@ net probe-in                hm2_7i96.0.gpio.006.in       or2.0.in1
 net probe-or-tool-sensor    or2.0.out
 net probe-or-tool-sensor    motion.probe-input
 
-
+# --- DIN-00 ---
+net din-00     <=  hm2_7i96.0.gpio.005.in
 
 
 #*******************
@@ -297,6 +299,59 @@ net z-neg-limit     =>  joint.3.neg-lim-sw-in
 net z-pos-limit     =>  joint.3.pos-lim-sw-in
 
 #*******************
+#  AXIS A JOINT 4
+#*******************
+
+setp   pid.a.Pgain     [JOINT_4]P
+setp   pid.a.Igain     [JOINT_4]I
+setp   pid.a.Dgain     [JOINT_4]D
+setp   pid.a.bias      [JOINT_4]BIAS
+setp   pid.a.FF0       [JOINT_4]FF0
+setp   pid.a.FF1       [JOINT_4]FF1
+setp   pid.a.FF2       [JOINT_4]FF2
+setp   pid.a.deadband  [JOINT_4]DEADBAND
+setp   pid.a.maxoutput [JOINT_4]MAX_OUTPUT
+setp   pid.a.error-previous-target true
+# This setting is to limit bogus stepgen
+# velocity corrections caused by position
+# feedback sample time jitter.
+setp   pid.a.maxerror 0.012700
+
+net a-index-enable  => pid.a.index-enable
+net a-enable        =>  pid.a.enable
+net a-pos-cmd       =>  pid.a.command
+net a-pos-fb        =>  pid.a.feedback
+net a-output        <=  pid.a.output
+
+# Step Gen signals/setup
+
+setp   hm2_7i96.0.stepgen.04.dirsetup        [JOINT_4]DIRSETUP
+setp   hm2_7i96.0.stepgen.04.dirhold         [JOINT_4]DIRHOLD
+setp   hm2_7i96.0.stepgen.04.steplen         [JOINT_4]STEPLEN
+setp   hm2_7i96.0.stepgen.04.stepspace       [JOINT_4]STEPSPACE
+setp   hm2_7i96.0.stepgen.04.position-scale  [JOINT_4]STEP_SCALE
+setp   hm2_7i96.0.stepgen.04.step_type        0
+setp   hm2_7i96.0.stepgen.04.control-type     1
+setp   hm2_7i96.0.stepgen.04.maxaccel         [JOINT_4]STEPGEN_MAXACCEL
+setp   hm2_7i96.0.stepgen.04.maxvel           [JOINT_4]STEPGEN_MAXVEL
+
+# ---closedloop stepper signals---
+
+net a-pos-cmd    <= joint.4.motor-pos-cmd
+net a-vel-cmd    <= joint.4.vel-cmd
+net a-output     => hm2_7i96.0.stepgen.04.velocity-cmd
+net a-pos-fb     <= hm2_7i96.0.stepgen.04.position-fb
+net a-pos-fb     => joint.4.motor-pos-fb
+net a-enable     <= joint.4.amp-enable-out
+net a-enable     => hm2_7i96.0.stepgen.04.enable
+
+# ---setup home / limit switch signals---
+
+net a-home-sw     =>  joint.4.home-sw-in
+net a-neg-limit     =>  joint.4.neg-lim-sw-in
+net a-pos-limit     =>  joint.4.pos-lim-sw-in
+
+#*******************
 #  SPINDLE
 #*******************
 
@@ -359,6 +414,11 @@ net jog-z-pos      halui.axis.z.plus
 net jog-z-neg      halui.axis.z.minus
 net jog-z-analog   halui.axis.z.analog
 net z-is-homed     halui.joint.2.is-homed
+net axis-select-a  halui.axis.a.select
+net jog-a-pos      halui.axis.a.plus
+net jog-a-neg      halui.axis.a.minus
+net jog-a-analog   halui.axis.a.analog
+net a-is-homed     halui.joint.4.is-homed
 net jog-selected-pos      halui.axis.selected.plus
 net jog-selected-neg      halui.axis.selected.minus
 net spindle-manual-cw     halui.spindle.0.forward
@@ -383,6 +443,8 @@ net in-position               <=  motion.in-position
 net machine-is-enabled        <=  motion.motion-enabled
 
 #  ---digital in / out signals---
+
+net din-00     =>  motion.digital-in-00
 
 #  ---estop signals---
 

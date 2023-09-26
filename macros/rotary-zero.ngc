@@ -18,7 +18,7 @@
 #<_ToolChangeX> =       326.0     ( machine X coordinate to pause at for manual tool changing )
 #<_ToolChangeY> =       100.0     ( machine Y coordinate to pause at for manual tool changing )
 #<_MistOnDuringProbe> =   0     ( set to 1 for mist, or 2 for coolant, or 0 for nothing during probing, to clear switch of swarf )
-#<_SpoilABSDiff> =       -17.886
+#<_SpoilABSDiff> =       -18.756
 
 (-------------------------------------------------------------------------------------------------------)
 

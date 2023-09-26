@@ -334,6 +334,8 @@ setp   hm2_7i96.0.stepgen.04.step_type        0
 setp   hm2_7i96.0.stepgen.04.control-type     1
 setp   hm2_7i96.0.stepgen.04.maxaccel         [JOINT_4]STEPGEN_MAXACCEL
 setp   hm2_7i96.0.stepgen.04.maxvel           [JOINT_4]STEPGEN_MAXVEL
+setp   hm2_7i96.0.stepgen.04.step.invert_output   true
+setp   hm2_7i96.0.stepgen.04.direction.invert_output   true
 
 # ---closedloop stepper signals---
 

@@ -6,15 +6,16 @@
 loadusr -Wn pyvcp pyvcp -c pyvcp [DISPLAY](PYVCP)
 source postgui_call_list.hal
 loadrt [KINS]KINEMATICS
-loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_spindles=[EMCMOT]MAX_SPINDLES
 loadrt hostmot2
-loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=1 num_pwmgens=0 num_stepgens=5 sserial_port_0=00xxxx" 
+loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=1 num_pwmgens=1 num_stepgens=5 sserial_port_0=00xxxx" 
 setp    hm2_7i96.0.watchdog.timeout_ns 5000000
-loadrt pid names=pid.x,pid.y,pid.y2,pid.z,pid.s,pid.a,M3Trigger.trigger_pin
-loadrt abs names=abs.spindle
+loadrt pid names=pid.x,pid.y,pid.y2,pid.z,pid.s,pid.a,M3Trigger.trigger_pin,pid.l
+loadrt abs names=abs.spindle,abs.laser
 loadrt lowpass names=lowpass.spindle
 loadrt and2 count=14
 #loadusr -Wn /home/pi/linuxcnc/configs/PrintNC/hal_m5_command.py
+
 
 #loadrt hal_component my_mqtt_publisher halpython
 #loadrt pid anmes= my_mqtt_publisher.trigger_pin bit OUT

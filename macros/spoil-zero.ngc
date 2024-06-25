@@ -7,10 +7,10 @@
 #<_UseInches> =         0     ( set to 1 to use inches here, or 0 to use millimeters; should match units on tool.tbl dimensions )
 #<_TravelZ> =           0     ( machine Z coordinate for travelling, typically near max Z to avoid ever hitting the work )
 #<_TravelFeed> =      200.0     ( feedrate used for general Z moves when avoiding G0 )
-#<_ProbeX> =           15.0     ( machine X coordinate of switch/touch-off plate )
-#<_ProbeY> =           162.0     ( machine Y coordinate of switch/touch-off plate )
+#<_ProbeX> =           [204.0 + #5410/2*0.7]     ( machine X coordinate of switch/touch-off plate )
+#<_ProbeY> =           [#5410/2*0.7]     ( machine Y coordinate of switch/touch-off plate )
 #<_ProbeFastZ> =       -50.0     ( machine Z coord to move to before starting probe, longest tool should not touch switch at this Z )
-#<_ProbeMinZ> =        -100.0     ( machine Z coord to stop probe, shortest tool must touch switch at this Z, must be > min Z )
+#<_ProbeMinZ> =        -130.0     ( machine Z coord to stop probe, shortest tool must touch switch at this Z, must be > min Z )
 #<_ProbeRetract> =      5.0     ( small distance to retract before approaching switch/touch-off plate second time )
 #<_ProbeFastFeed> =   300.0     ( feed rate for moving to _ProbeFastZ )
 #<_ProbeFeed1> =       100.0     ( feed rate for touching switch/touch-off plate first time )
@@ -18,7 +18,8 @@
 #<_ToolChangeX> =       326.0     ( machine X coordinate to pause at for manual tool changing )
 #<_ToolChangeY> =       100.0     ( machine Y coordinate to pause at for manual tool changing )
 #<_MistOnDuringProbe> =   0     ( set to 1 for mist, or 2 for coolant, or 0 for nothing during probing, to clear switch of swarf )
-#<_SpoilABSDiff> =       30
+#<_SpoilABSDiff> =       -22.0
+
 
 (-------------------------------------------------------------------------------------------------------)
 
@@ -49,7 +50,8 @@ G40                                            ( turn cutter radius compensation
   M9                                           ( turn off mist )
   G54
   G90
-  G53 G1 X15 Y162 F500
+  (G53 G1 Z-1 F500)
+  (G53 G1 X204 Y382 F3000)
   G91
   G1 Z[1] F100
   G90
@@ -59,6 +61,7 @@ G40                                            ( turn cutter radius compensation
   G10 L20 P4 Z[1]
 
   G53 G1 F[#<_TravelFeed>] Z[#<_TravelZ>]      ( return to safe level )
+  G53 G1 X204 Y382 F3000
   G53 G0 X[#5181] Y[#5182]                     ( return to where we were in X Y)
   G53 G1 F[#<_TravelFeed>] Z[#5183]            ( return to where we were in Z )
   M72                                          ( restore modal state )

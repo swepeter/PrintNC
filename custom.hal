@@ -33,3 +33,67 @@ setp mux4.0.in2 34 #reverse
 setp mux4.0.in3 128 #reset
 
 net control YL620.W_Control.00 <= mux4.0.out
+
+# *******************
+#   LASER PWM
+# *******************
+setp   hm2_7i96.0.pwmgen.00.output-type 1
+setp   hm2_7i96.0.pwmgen.00.scale 100
+setp    hm2_7i96.0.pwmgen.pwm_frequency 5000
+
+#net machine-on halui.machine.is-on
+net laser-on  hm2_7i96.0.pwmgen.00.enable hm2_7i96.0.ssr.00.out-04 <= halui.machine.is-on
+#setp hm2_7i96.0.pwmgen.00.enable true
+#net laser-on  hm2_7i96.0.pwmgen.00.enable hm2_7i96.0.ssr.00.out-04 
+#net laser-on  <= machine-is-on
+
+#net laser-pwm hm2_7i96.0.pwmgen.00.value
+net analogout motion.analog-out-00 => hm2_7i96.0.pwmgen.00.value
+
+
+# ---- LASER ---- 
+
+#loadrt pwmgen output_type=0,0
+
+#addf pwmgen.update            servo-thread
+#addf pwmgen.make-pulses       servo-thread  
+#addf pid.l.do-pid-calcs       servo-thread
+#addf abs.laser                servo-thread
+
+
+# *******************
+#   LASER
+# *******************
+
+#setp   pid.l.Pgain     [LASER_0]P
+#setp   pid.l.Igain     [LASER_0]I
+#setp   pid.l.Dgain     [LASER_0]D
+#setp   pid.l.bias      [LASER_0]BIAS
+#setp   pid.l.FF0       [LASER_0]FF0
+#setp   pid.l.FF1       [LASER_0]FF1
+#setp   pid.l.FF2       [LASER_0]FF2
+#setp   pid.l.deadband  [LASER_0]DEADBAND
+#setp   pid.l.maxoutput [LASER_0]MAX_OUTPUT
+#setp   pid.l.error-previous-target true
+
+#net laser-index-enable  <=> pid.l.index-enable
+#net laser-enable        =>  pid.l.enable
+#net laser-vel-cmd-rpm     => pid.l.command
+#net laser-vel-fb-rpm      => pid.l.feedback
+#net laser-output        <=  pid.l.output
+
+
+# *******************
+#   LASER PWM
+# *******************
+#setp   hm2_7i96.0.pwmgen.00.output-type 1
+#setp   hm2_7i96.0.pwmgen.00.scale 100
+#setp    hm2_7i96.0.pwmgen.pwm_frequency 5000
+
+#setp hm2_7i96.0.pwmgen.00.enable true
+
+#net laser-speed-cmd <= spindle.1.speed-out => pwmgen.1.value
+#net laser-on <= spindle.1.on => pwmgen.1.enable
+#net laser-pwm <= pwmgen.1.pwm => hm2_7i96.0.ssr.00.out-01
+# Establecer la velocidad mÃ¡xima del husillo en RPM
+#setp pwmgen.1.scale 11000

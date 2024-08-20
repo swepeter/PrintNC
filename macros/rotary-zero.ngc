@@ -10,15 +10,15 @@
 #<_ProbeX> =        [204.0 + #5410/2*0.7]     ( machine X coordinate of switch/touch-off plate )
 #<_ProbeY> =        [#5410/2*0.7]     ( machine Y coordinate of switch/touch-off plate )
 #<_ProbeFastZ> =       -50.0     ( machine Z coord to move to before starting probe, longest tool should not touch switch at this Z )
-#<_ProbeMinZ> =        -100.0     ( machine Z coord to stop probe, shortest tool must touch switch at this Z, must be > min Z )
+#<_ProbeMinZ> =        -140.0     ( machine Z coord to stop probe, shortest tool must touch switch at this Z, must be > min Z )
 #<_ProbeRetract> =      5.0     ( small distance to retract before approaching switch/touch-off plate second time )
-#<_ProbeFastFeed> =   300.0     ( feed rate for moving to _ProbeFastZ )
-#<_ProbeFeed1> =       100.0     ( feed rate for touching switch/touch-off plate first time )
+#<_ProbeFastFeed> =     600.0     ( feed rate for moving to _ProbeFastZ )
+#<_ProbeFeed1> =        400.0     ( feed rate for touching switch/touch-off plate first time )
 #<_ProbeFeed2> =        100.0     ( feed rate for touching switch/touch-off plate second time )
 #<_ToolChangeX> =       326.0     ( machine X coordinate to pause at for manual tool changing )
 #<_ToolChangeY> =       100.0     ( machine Y coordinate to pause at for manual tool changing )
 #<_MistOnDuringProbe> =   0     ( set to 1 for mist, or 2 for coolant, or 0 for nothing during probing, to clear switch of swarf )
-#<_SpoilABSDiff> =       -1.8
+#<_SpoilABSDiff> =       -9.8
 
 (-------------------------------------------------------------------------------------------------------)
 
